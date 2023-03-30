@@ -8,7 +8,6 @@ import requireUser from './components/require_user';
 import {connectToChatServer} from './actions/chat';
 
 class App extends Component {
-
   componentDidMount(){
     this.props.connectToChatServer(`ws://${location.host}/websocket/chat`);
   }
