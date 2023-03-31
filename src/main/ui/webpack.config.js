@@ -1,4 +1,3 @@
-var webpack = require('webpack');
 var path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -35,5 +34,5 @@ module.exports = {
       },
     ]
   },
-  devtool: "source-map"
+  devtool: 'source-map'
 };
