@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import reduxThunk from 'redux-thunk';
@@ -18,21 +17,10 @@ const renderApp = (Component) => {
   render(
 
     <Provider store={store}>
-      <AppContainer>
-        <Component/>
-      </AppContainer>
+      <Component/>
     </Provider>
     , document.querySelector("#app")
   );
 }
+
 renderApp(App);
-if (module && module.hot) {
-  module.hot.accept('./app', () => {
-    const NextRootContainer = require('./app');
-    renderApp(NextRootContainer);
-  });
-  module.hot.accept('./reducers', () => {
-    const nextReducer = require('./reducers/index').default;
-    store.replaceReducer(nextReducer);
-  });
-}
