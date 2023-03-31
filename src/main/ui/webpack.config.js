@@ -4,9 +4,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
 module.exports = {
-  entry: [
-    './src/index.jsx',
-  ],
+  entry: [ './src/index.jsx' ],
   output: {
     publicPath: './',
     path: path.join(__dirname, '../../../build/resources/main/public'),
