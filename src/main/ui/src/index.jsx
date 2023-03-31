@@ -15,7 +15,6 @@ const store = applyMiddleware(
 
 const renderApp = (Component) => {
   render(
-
     <Provider store={store}>
       <Component/>
     </Provider>

@@ -1,74 +1,51 @@
-import React from 'react';
-import Rx from 'rxjs/Rx';
+import React, { useState } from 'react';
 import '../styles/login.scss';
 import { joinChat } from '../actions/chat';
 import { connect } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 const DEFAULT_AVATAR = '//ssl.gstatic.com/accounts/ui/avatar_2x.png';
 
-class Login extends React.Component {
+function Login({joinChat}) {
+  const navigate = useNavigate();
 
-  static contextTypes = {
-    router: React.PropTypes.object
+  const [alias, setAlias] = useState('');
+  const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
+
+  const updateAlias = (newAlias) => {
+    setAlias(newAlias);
+    const avatar = newAlias ? encodeURI(`https://robohash.org/${newAlias.toLowerCase()}.png`) : DEFAULT_AVATAR;
+    setAvatar(avatar);
   }
 
-  constructor(props){
-    super(props);
-    this.state = {alias: '', avatar: DEFAULT_AVATAR}
-  }
-
-  updateAvatar(alias){
-    const avatar = alias ? encodeURI(`https://robohash.org/${alias.toLowerCase()}.png`) : DEFAULT_AVATAR;
-    this.setState({ avatar });
-
-  }
-
-  onAliasChange(alias){
-    this.setState({alias});
-  }
-
-  onSubmit(e) {
-    e.preventDefault();
-    const {alias, avatar} = this.state;
-    this.props.joinChat({alias, avatar});
-    this.context.router.history.push('/chat');
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    joinChat({ alias, avatar });
+    navigate('/chat');
     return false;
   }
 
-  componentDidMount(){
-    this.aliasInput &&
-      Rx.Observable.
-      fromEvent(this.aliasInput,'keyup').
-      map(e => e.target.value).
-      distinctUntilChanged().
-      debounceTime(500).
-      subscribe(this.updateAvatar.bind(this))
-  }
-
-  render() {
-    return (
-      <div className="container">
-        <div className="panel panel-default card card-container">
-          <img id="profile-img" className="profile-img-card" src={this.state.avatar} />
-          <p id="profile-name" className="profile-name-card"></p>
-          <form className="form" onSubmit={this.onSubmit.bind(this)}>
-            <div className="form-group">
-              <input type="text"
-                id="inputAlias"
-                value={this.state.alias}
-                className="form-control input-lg"
-                placeholder="Alias"
-                ref={input => this.aliasInput = input}
-                onChange={event => this.onAliasChange(event.target.value)}
-                required autoFocus/>
-            </div>
-            <div className="form-group">
-              <button className="btn btn-lg btn-success btn-block" type="submit">Chat</button>
-            </div>
-          </form>
-        </div>
+  return (
+    <div className="container">
+      <div className="panel panel-default card card-container">
+        <img id="profile-img" className="profile-img-card" src={avatar} />
+        <p id="profile-name" className="profile-name-card"></p>
+        <form className="form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <input type="text"
+              className="form-control input-lg"
+              placeholder="Alias"
+              value={alias}
+              onChange={(e) => updateAlias(e.target.value)}
+              required autoFocus />
+          </div>
+          <div className="form-group">
+            <button className="btn btn-lg btn-success btn-block" type="submit">Chat</button>
+          </div>
+        </form>
       </div>
-    );
-  }
+    </div>
+  );
 }
-export default connect(null,{ joinChat })(Login);
+
+export default connect(null, {joinChat})(Login);

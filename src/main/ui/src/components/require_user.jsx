@@ -3,11 +3,6 @@ import { connect } from 'react-redux';
 
 export default function(ComposedComponent) {
   class RequireUser extends Component {
-
-    static contextTypes = {
-      router: React.PropTypes.object
-    }
-
     componentWillMount(){
       if(!this.props.user.alias){
         this.context.router.history.push('/');
