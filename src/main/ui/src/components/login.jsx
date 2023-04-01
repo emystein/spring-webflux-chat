@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const DEFAULT_AVATAR = '//ssl.gstatic.com/accounts/ui/avatar_2x.png';
 
-function Login({joinChat}) {
+function Login({confirm, joinChat}) {
   const navigate = useNavigate();
 
   const [alias, setAlias] = useState('');
@@ -20,6 +20,7 @@ function Login({joinChat}) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    confirm(true);
     joinChat({ alias, avatar });
     navigate('/chat');
     return false;

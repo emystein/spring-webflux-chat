@@ -28,7 +28,7 @@ task npmDependencies(type: Exec) {
 task buildUI(type: Exec, dependsOn: npmDependencies) {
     workingDir 'src/main/ui'
     commandLine 'npm'
-    args = ["run", "build"]
+    args = ["run", "build:dev"]
 }
 
 processResources.dependsOn buildUI
