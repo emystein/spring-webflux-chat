@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+import Rx from 'rxjs/Rx';
 import '../styles/login.scss';
 import { joinChat } from '../actions/chat';
 import { connect } from 'react-redux';
@@ -12,8 +13,19 @@ function Login({confirm, joinChat}) {
   const [alias, setAlias] = useState('');
   const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
 
-  const updateAlias = (newAlias) => {
-    setAlias(newAlias);
+  const aliasInput = useRef();
+
+  useEffect(() => {
+    aliasInput &&
+    Rx.Observable.
+    fromEvent(aliasInput.current,'keyup').
+    map(e => e.target.value).
+    distinctUntilChanged().
+    debounceTime(500).
+    subscribe(updateAvatar.bind(this))
+  });
+
+  const updateAvatar = (newAlias) => {
     const avatar = newAlias ? encodeURI(`https://robohash.org/${newAlias.toLowerCase()}.png`) : DEFAULT_AVATAR;
     setAvatar(avatar);
   }
@@ -37,7 +49,8 @@ function Login({confirm, joinChat}) {
               className="form-control input-lg"
               placeholder="Alias"
               value={alias}
-              onChange={(e) => updateAlias(e.target.value)}
+              ref={aliasInput}
+              onChange={(event) => setAlias(event.target.value)}
               required autoFocus />
           </div>
           <div className="form-group">
