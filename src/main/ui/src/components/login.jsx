@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import Rx from 'rxjs/Rx';
+import { useDebounce } from 'react-haiku';
 import '../styles/login.scss';
 import { joinChat } from '../actions/chat';
 import { connect } from 'react-redux';
@@ -11,19 +11,13 @@ function Login({confirm, joinChat}) {
   const navigate = useNavigate();
 
   const [alias, setAlias] = useState('');
+  const debouncedAlias = useDebounce(alias, 250)
   const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
 
-  const aliasInput = useRef();
 
   useEffect(() => {
-    aliasInput &&
-    Rx.Observable.
-    fromEvent(aliasInput.current,'keyup').
-    map(e => e.target.value).
-    distinctUntilChanged().
-    debounceTime(500).
-    subscribe(updateAvatar.bind(this))
-  });
+    updateAvatar(debouncedAlias)
+  }, [debouncedAlias]);
 
   const updateAvatar = (newAlias) => {
     const avatar = newAlias ? encodeURI(`https://robohash.org/${newAlias.toLowerCase()}.png`) : DEFAULT_AVATAR;
@@ -49,7 +43,6 @@ function Login({confirm, joinChat}) {
               className="form-control input-lg"
               placeholder="Alias"
               value={alias}
-              ref={aliasInput}
               onChange={(event) => setAlias(event.target.value)}
               required autoFocus />
           </div>
