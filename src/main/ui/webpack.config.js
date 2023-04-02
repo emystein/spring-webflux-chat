@@ -32,5 +32,17 @@ module.exports = {
       },
     ]
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
+  devServer: {
+    static: {
+      directory: path.join(__dirname, '../../../build/resources/main/public'),
+    },
+    port: 9000,
+    proxy: {
+      '/websocket/chat': {
+        target: 'ws://127.0.0.1:8080',
+        ws: true
+      }
+    }
+  }
 };
