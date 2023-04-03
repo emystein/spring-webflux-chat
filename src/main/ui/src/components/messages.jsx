@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import {connect} from 'react-redux';
 import HumanizedTime from './humanized_time';
 import '../styles/messages.scss';
 
-class Messages extends Component {
-  renderMessages() {
-    return this.props.messages.map(message => {
+function Messages({messages}) {
+  const renderMessages = () => {
+    return messages.map(message => {
       return (
         <div key={message.id} className="list-group-item">
           <div className="media">
@@ -28,20 +28,16 @@ class Messages extends Component {
       );
     });
   }
-  render() {
-    return (
-      <div className="list-group chat-messages panel">
-        {this.renderMessages()}
-        <div ref={(div) => {
-          if(div) div.scrollIntoView({block: 'end', behavior: 'smooth'});
-        }}></div>
-    </div>
-    );
-  }
 
+  return (
+    <div className="list-group chat-messages panel">
+      {renderMessages()}
+      <div ref={(div) => { if (div) div.scrollIntoView({block: 'end', behavior: 'smooth'}); }}/>
+    </div>
+  );
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {messages: state.messages};
 }
 
