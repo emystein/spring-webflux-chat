@@ -26,6 +26,8 @@ tasks.withType<Test> {
 }
 
 node {
+	version.set("18.14.0")
+	download.set(true)
 	nodeProjectDir.set(file("src/main/ui"))
 }
 

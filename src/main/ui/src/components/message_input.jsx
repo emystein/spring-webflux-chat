@@ -3,12 +3,12 @@ import {sendMessage} from '../actions/chat';
 import {connect} from 'react-redux';
 
 function MessageInput({user, sendMessage}) {
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState("");
 
   const onSubmit = (event) => {
     event.preventDefault();
     sendMessage(user, message);
-    this.setState({message: ''});
+    setMessage("");
     return false;
   }
 

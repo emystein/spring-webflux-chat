@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import {createTimer, removeTimer} from '../actions/time';
 
 class TimeTicker extends Component {
-
   componentDidMount(){
     console.log('TimeTicker did mount');
     this.props.createTimer();
