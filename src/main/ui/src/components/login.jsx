@@ -11,7 +11,7 @@ function Login({confirm, joinChat}) {
   const navigate = useNavigate();
 
   const [alias, setAlias] = useState('');
-  const debouncedAlias = useDebounce(alias, 250)
+  const debouncedAlias = useDebounce(alias, 250);
   const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
 
 
