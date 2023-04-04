@@ -17,7 +17,9 @@ function Messages({messages}) {
                 <div className="col-md-2 text-left text-info">
                   {message.user.alias}
                 </div>
-                <div className="col-md-8 text-left">{message.message}</div>
+                <div className="col-md-8 text-left">
+                  {message.message}
+                </div>
                 <div className="col-md-2 text-right text-info">
                   <small><HumanizedTime date={message.timestamp}/></small>
                 </div>
