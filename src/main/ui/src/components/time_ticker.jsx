@@ -1,20 +1,22 @@
-import React, {useEffect} from 'react';
-import {connect} from 'react-redux';
+import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import {createTimer, removeTimer} from '../actions/time';
 
-function TimeTicker({interval, createTimer, removeTimer}) {
-  useEffect(() => {
+class TimeTicker extends Component {
+
+  componentDidMount(){
     console.log('TimeTicker did mount');
-    createTimer();
+    this.props.createTimer();
+  }
 
-    // called on unmount
-    return () => {
-      console.log('TimeTicker will unmount');
-      removeTimer(interval);
-    }
-  });
+  componentWillUnmount(){
+    console.log('TimeTicker will unmount');
+    this.props.removeTimer(this.props.interval);
+  }
 
-  return false;
+  render(){
+    return false;
+  }
 }
 
-export default connect(({time: {interval}}) => ({interval}), {createTimer, removeTimer})(TimeTicker);
+export default connect(({time:{interval}}) => ({interval}),{  createTimer, removeTimer })(TimeTicker);
