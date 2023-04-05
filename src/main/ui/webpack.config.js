@@ -5,11 +5,6 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: [ './src/index.jsx' ],
-  output: {
-    publicPath: './',
-    path: path.join(__dirname, '../../../build/resources/main/public'),
-    filename: 'main.js'
-  },
   resolve: {
     extensions: ['.js', '.jsx']
   },
@@ -34,9 +29,6 @@ module.exports = {
   },
   devtool: 'source-map',
   devServer: {
-    static: {
-      directory: path.join(__dirname, '../../../build/resources/main/public'),
-    },
     port: 9000,
     proxy: {
       '/websocket/chat': {

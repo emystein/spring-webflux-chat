@@ -36,6 +36,12 @@ val buildUI = tasks.register<NpmTask>("buildUI") {
 	args.set(listOf("run", "build:dev"))
 }
 
-tasks.processResources {
+val copyUIBundleToBuildDirectory = tasks.register<Copy>("copyUIBundleToBuildDirectory") {
 	dependsOn(buildUI)
+	from("src/main/ui/dist")
+	into("build/resources/main/public")
+}
+
+tasks.processResources {
+	dependsOn(copyUIBundleToBuildDirectory)
 }
