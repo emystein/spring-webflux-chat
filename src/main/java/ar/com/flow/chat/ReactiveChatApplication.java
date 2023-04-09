@@ -1,4 +1,4 @@
-package codes.monkey.reactivechat;
+package ar.com.flow.chat;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

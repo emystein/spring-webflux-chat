@@ -1,4 +1,4 @@
-package codes.monkey.reactivechat;
+package ar.com.flow.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +14,7 @@ import reactor.core.publisher.UnicastProcessor;
 import java.io.IOException;
 import java.util.Optional;
 
-import static codes.monkey.reactivechat.Event.Type.USER_LEFT;
+import static ar.com.flow.chat.Event.Type.USER_LEFT;
 
 public class ChatSocketHandler implements WebSocketHandler {
 

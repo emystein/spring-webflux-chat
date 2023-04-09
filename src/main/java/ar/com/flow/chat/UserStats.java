@@ -1,6 +1,6 @@
-package codes.monkey.reactivechat;
+package ar.com.flow.chat;
 
-import codes.monkey.reactivechat.Event.Type;
+import ar.com.flow.chat.Event.Type;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-import static codes.monkey.reactivechat.Event.Type.*;
+import static ar.com.flow.chat.Event.Type.*;
 import static java.util.Arrays.asList;
 
 public class UserStats {

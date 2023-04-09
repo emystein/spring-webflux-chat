@@ -1,4 +1,4 @@
-package codes.monkey.reactivechat;
+package ar.com.flow.chat;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
