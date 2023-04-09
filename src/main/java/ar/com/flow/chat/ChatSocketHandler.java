@@ -9,7 +9,7 @@ import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.UnicastProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -17,17 +17,16 @@ import java.util.Optional;
 import static ar.com.flow.chat.Event.Type.USER_LEFT;
 
 public class ChatSocketHandler implements WebSocketHandler {
-
-    private UnicastProcessor<Event> eventPublisher;
+    private Sinks.Many<Event> eventPublisher;
     private Flux<String> outputEvents;
     private ObjectMapper mapper;
 
     private Logger log = LoggerFactory.getLogger(getClass().getName());
 
-    public ChatSocketHandler(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
+    public ChatSocketHandler(Sinks.Many<Event> eventPublisher, Flux<Event> events) {
         this.eventPublisher = eventPublisher;
         this.mapper = new ObjectMapper();
-        this.outputEvents = Flux.from(events).map(this::toJSON);
+        this.outputEvents = Flux.from(events).map(this::toJSON).doOnNext((event) -> log.info(event));
     }
 
     @Override
@@ -64,16 +63,16 @@ public class ChatSocketHandler implements WebSocketHandler {
     }
 
     private static class WebSocketMessageSubscriber {
-        private UnicastProcessor<Event> eventPublisher;
+        private Sinks.Many<Event> eventPublisher;
         private Optional<Event> lastReceivedEvent = Optional.empty();
 
-        public WebSocketMessageSubscriber(UnicastProcessor<Event> eventPublisher) {
+        public WebSocketMessageSubscriber(Sinks.Many<Event> eventPublisher) {
             this.eventPublisher = eventPublisher;
         }
 
         public void onNext(Event event) {
             lastReceivedEvent = Optional.of(event);
-            eventPublisher.onNext(event);
+            eventPublisher.emitNext(event, Sinks.EmitFailureHandler.FAIL_FAST);
         }
 
         public void onError(Throwable error) {
@@ -82,12 +81,12 @@ public class ChatSocketHandler implements WebSocketHandler {
         }
 
         public void onComplete() {
-
-            lastReceivedEvent.ifPresent(event -> eventPublisher.onNext(
+            lastReceivedEvent.ifPresent(event -> eventPublisher.emitNext(
                     Event.type(USER_LEFT)
                             .withPayload()
                             .user(event.getUser())
-                            .build()));
+                            .build(),
+                    Sinks.EmitFailureHandler.FAIL_FAST));
         }
 
     }

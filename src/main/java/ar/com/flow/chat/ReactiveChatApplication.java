@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.UnicastProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +27,13 @@ public class ReactiveChatApplication {
     }
 
     @Bean
-    public UnicastProcessor<Event> eventPublisher(){
-        return UnicastProcessor.create();
+    public Sinks.Many<Event> eventPublisher() {
+        return Sinks.many().replay().limit(25);
     }
 
     @Bean
-    public Flux<Event> events(UnicastProcessor<Event> eventPublisher) {
-        return eventPublisher
-                .replay(25)
-                .autoConnect();
+    public Flux<Event> events(Sinks.Many<Event> eventPublisher) {
+        return eventPublisher.asFlux();
     }
 
     @Bean
@@ -47,7 +45,7 @@ public class ReactiveChatApplication {
     }
 
     @Bean
-    public HandlerMapping webSocketMapping(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
+    public HandlerMapping webSocketMapping(Sinks.Many<Event> eventPublisher, Flux<Event> events) {
         Map<String, Object> map = new HashMap<>();
         map.put("/websocket/chat", new ChatSocketHandler(eventPublisher, events));
         SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
@@ -64,7 +62,7 @@ public class ReactiveChatApplication {
     }
 
     @Bean
-    public UserStats userStats(Flux<Event> events, UnicastProcessor eventPublisher){
+    public UserStats userStats(Flux<Event> events, Sinks.Many<Event> eventPublisher){
         return new UserStats(events, eventPublisher);
     }
 }

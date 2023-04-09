@@ -2,7 +2,7 @@ package ar.com.flow.chat;
 
 import ar.com.flow.chat.Event.Type;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.UnicastProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +14,9 @@ import static ar.com.flow.chat.Event.Type.*;
 import static java.util.Arrays.asList;
 
 public class UserStats {
+    Map<String, Stats> userStatsMap = new ConcurrentHashMap<>();
 
-
-    UnicastProcessor eventPublisher;
-    Map<String, Stats> userStatsMap = new ConcurrentHashMap();
-
-    public UserStats(Flux<Event> events, UnicastProcessor eventPublisher) {
-        this.eventPublisher = eventPublisher;
+    public UserStats(Flux<Event> events, Sinks.Many<Event> eventPublisher) {
         events
                 .filter(type(CHAT_MESSAGE, USER_JOINED))
                 .subscribe(this::onChatMessage);
@@ -29,16 +25,14 @@ public class UserStats {
                 .map(Event::getUser)
                 .map(User::getAlias)
                 .subscribe(userStatsMap::remove);
-
         events
                 .filter(type(USER_JOINED))
-                .map(event -> Event.type(USER_STATS)
+                .map((event) -> Event.type(USER_STATS)
                         .withPayload()
                         .systemUser()
                         .property("stats", new HashMap<>(userStatsMap))
-                        .build()
-                )
-                .subscribe(eventPublisher::onNext);
+                        .build())
+                .subscribe((userStatsEvent) -> eventPublisher.emitNext(userStatsEvent, Sinks.EmitFailureHandler.FAIL_FAST));
     }
 
     private static Predicate<Event> type(Type... types){
