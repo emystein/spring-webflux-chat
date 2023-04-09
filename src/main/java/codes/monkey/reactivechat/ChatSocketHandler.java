@@ -2,6 +2,8 @@ package codes.monkey.reactivechat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -20,6 +22,8 @@ public class ChatSocketHandler implements WebSocketHandler {
     private Flux<String> outputEvents;
     private ObjectMapper mapper;
 
+    private Logger log = LoggerFactory.getLogger(getClass().getName());
+
     public ChatSocketHandler(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
         this.eventPublisher = eventPublisher;
         this.mapper = new ObjectMapper();
@@ -27,15 +31,18 @@ public class ChatSocketHandler implements WebSocketHandler {
     }
 
     @Override
-    public Mono<Void> handle(WebSocketSession session) {
+    public Mono<Void> handle(WebSocketSession userSession) {
+        log.info("Initiated WebSocketSession: {}", userSession.getId());
+
         WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(eventPublisher);
-        return session.receive()
+
+        return userSession.receive()
                 .map(WebSocketMessage::getPayloadAsText)
                 .map(this::toEvent)
                 .doOnNext(subscriber::onNext)
                 .doOnError(subscriber::onError)
                 .doOnComplete(subscriber::onComplete)
-                .zipWith(session.send(outputEvents.map(session::textMessage)))
+                .zipWith(userSession.send(outputEvents.map(userSession::textMessage)))
                 .then();
     }
 
